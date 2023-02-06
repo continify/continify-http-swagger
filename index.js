@@ -44,7 +44,9 @@ module.exports = ConnitifyPlugin(
     }
 
     ins.addHook('onRoute', async function (rt) {
-      if (rt.url.indexOf('/swagger-ui') === 0) return
+      if (!rt.schema && !rt.swagger) {
+        this.$log.warn(`swagger.json skip:[${rt.method}] ${rt.url}`)
+      }
 
       const url = rt.url
         .split('/')
