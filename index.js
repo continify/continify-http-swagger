@@ -32,7 +32,6 @@ module.exports = ConnitifyPlugin(
     })
     const rootPath = SwaggerUI.absolutePath()
     const swaggerOption = merge(options, envOption)
-    swaggerOption.basePath = serverOption.routePrefix
     const swaggerPaths = {}
 
     if (ins.hasDecorator('$ajv')) {
@@ -45,7 +44,7 @@ module.exports = ConnitifyPlugin(
 
     ins.addHook('onRoute', async function (rt) {
       if (!rt.schema && !rt.swagger) {
-        this.$log.warn(`swagger.json skip:[${rt.method}] ${rt.url}`)
+        return this.$log.warn(`swagger.json skip:[${rt.method}] ${rt.url}`)
       }
 
       const url = rt.url
@@ -120,9 +119,20 @@ module.exports = ConnitifyPlugin(
       $useInBeta: swaggerOption.useInBeta,
       url: '/swagger-ui/swagger-initializer.js',
       handler (req, rep) {
-        const path = './swagger-initializer.jsc'
-        rep.$sent = true
-        createReadStream(path).pipe(rep.$raw)
+        const code = `
+        window.onload = function () {
+          // the following lines will be replaced by docker/configurator, when it runs in a docker-container
+          window.ui = SwaggerUIBundle({
+            url: '${serverOption.routePrefix}/swagger-ui/swagger.json',
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+            plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+            layout: 'StandaloneLayout'
+          })
+        }
+        `
+        rep.send(code)
       }
     })
 
