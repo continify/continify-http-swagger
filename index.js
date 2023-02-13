@@ -27,8 +27,8 @@ module.exports = ConnitifyPlugin(
     const envOption = getValue($options, 'swagger', {
       default: {}
     })
-    const serverOption = getValue($options, 'server', {
-      default: {}
+    const routePrefix = getValue($options, 'server.routePrefix', {
+      default: ''
     })
     const rootPath = SwaggerUI.absolutePath()
     const swaggerOption = merge(options, envOption)
@@ -123,7 +123,7 @@ module.exports = ConnitifyPlugin(
         window.onload = function () {
           // the following lines will be replaced by docker/configurator, when it runs in a docker-container
           window.ui = SwaggerUIBundle({
-            url: '${serverOption.routePrefix}/swagger-ui/swagger.json',
+            url: '${routePrefix}/swagger-ui/swagger.json',
             dom_id: '#swagger-ui',
             deepLinking: true,
             presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
