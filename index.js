@@ -37,7 +37,15 @@ module.exports = ConnitifyPlugin(
     if (ins.hasDecorator('$ajv')) {
       ins.$ajv.addKeyword({
         keyword: 'desc',
-        type: 'string',
+        type: [
+          'string',
+          'number',
+          'integer',
+          'boolean',
+          'null',
+          'object',
+          'array'
+        ],
         allowUndefined: true
       })
     }
